@@ -105,6 +105,8 @@ qlab stop mail-lab-client2
 
 ## Exercises
 
+> **New to mail servers?** See the [Step-by-Step Guide](GUIDE.md) for complete walkthroughs including how to interact with SMTP and IMAP via telnet.
+
 | # | Exercise | What you'll do |
 |---|----------|----------------|
 | 1 | **Send mail (alice → bob)** | On client1: `sudo -u alice bash`, then `echo "Hi Bob!" \| mail -s "Hello" bob@mail.lab` |
