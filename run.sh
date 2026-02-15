@@ -269,6 +269,7 @@ ssh_pwauth: true
 packages:
   - mailutils
   - mutt
+  - telnet
   - nano
   - net-tools
   - iputils-ping
@@ -310,10 +311,13 @@ write_files:
         \033[1;33mInternal IP:\033[0m  \033[1;36m192.168.100.2\033[0m
         \033[1;33mMail Server:\033[0m  \033[1;36m192.168.100.1\033[0m (mail.lab)
 
-        \033[1;33mSend mail:\033[0m
+        \033[1;33mSwitch to alice:\033[0m
+          \033[0;32msudo -u alice bash\033[0m
+
+        \033[1;33mSend mail (as alice):\033[0m
           \033[0;32mecho "Hello Bob!" | mail -s "Hello" bob@mail.lab\033[0m
 
-        \033[1;33mRead mail with mutt:\033[0m
+        \033[1;33mRead mail with mutt (as alice):\033[0m
           \033[0;32mmutt\033[0m
 
         \033[1;33mTest server connectivity:\033[0m
@@ -388,6 +392,7 @@ ssh_pwauth: true
 packages:
   - mailutils
   - mutt
+  - telnet
   - nano
   - net-tools
   - iputils-ping
@@ -429,10 +434,13 @@ write_files:
         \033[1;33mInternal IP:\033[0m  \033[1;36m192.168.100.3\033[0m
         \033[1;33mMail Server:\033[0m  \033[1;36m192.168.100.1\033[0m (mail.lab)
 
-        \033[1;33mSend mail:\033[0m
+        \033[1;33mSwitch to bob:\033[0m
+          \033[0;32msudo -u bob bash\033[0m
+
+        \033[1;33mSend mail (as bob):\033[0m
           \033[0;32mecho "Hello Alice!" | mail -s "Hello" alice@mail.lab\033[0m
 
-        \033[1;33mRead mail with mutt:\033[0m
+        \033[1;33mRead mail with mutt (as bob):\033[0m
           \033[0;32mmutt\033[0m
 
         \033[1;33mTest server connectivity:\033[0m

@@ -108,11 +108,14 @@ qlab stop mail-lab-client2
 | # | Exercise | What you'll do |
 |---|----------|----------------|
 | 1 | **Send mail (alice → bob)** | On client1: `sudo -u alice bash`, then `echo "Hi Bob!" \| mail -s "Hello" bob@mail.lab` |
-| 2 | **Read mail (bob)** | On client2: `sudo -u bob mutt` — read alice's mail and reply |
-| 3 | **Read reply (alice)** | On client1: `sudo -u alice mutt` — read bob's reply |
+| 2 | **Read mail (bob)** | On client2: `sudo -u bob bash`, then `mutt` — read alice's mail and reply |
+| 3 | **Read reply (alice)** | On client1: `sudo -u alice bash`, then `mutt` — read bob's reply |
 | 4 | **Check Postfix logs** | On server: `sudo tail -f /var/log/mail.log` |
 | 5 | **Check Dovecot status** | On server: `systemctl status dovecot` and `sudo doveadm mailbox list -u alice` |
-| 6 | **Add a new user** | On server: create user `charlie`, configure mail, test sending/receiving |
+| 6 | **Test with telnet** | On client1/client2: `telnet mail.lab 25` (SMTP) or `telnet mail.lab 143` (IMAP) |
+| 7 | **Add a new user** | On server: create user `charlie`, configure mail, test sending/receiving |
+
+> **Important:** Mail commands (`mail`, `mutt`) must be run as the mail user (`alice` or `bob`), not as `labuser`. Switch user first with `sudo -u alice bash` or `sudo -u bob bash`.
 
 ## Managing VMs
 
