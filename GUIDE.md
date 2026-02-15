@@ -34,9 +34,9 @@ cloud-init status --wait
 ```
         Host Machine
        ┌────────────┐
-       │  SSH :auto  │──────► mail-lab-server
-       │  SSH :auto  │──────► mail-lab-client1
-       │  SSH :auto  │──────► mail-lab-client2
+       │  SSH :auto │──────► mail-lab-server
+       │  SSH :auto │──────► mail-lab-client1
+       │  SSH :auto │──────► mail-lab-client2
        └────────────┘
 
    Internal LAN (192.168.100.0/24)
@@ -51,12 +51,12 @@ cloud-init status --wait
   │         │                                │
   │    ┌────┴────┐                           │
   │    │         │                           │
-  │  ┌─┴────────┴──┐   ┌──────────────┐     │
-  │  │ client1     │   │ client2      │     │
-  │  │ 192.168.    │   │ 192.168.     │     │
-  │  │   100.2     │   │   100.3      │     │
-  │  │ alice       │   │ bob          │     │
-  │  └─────────────┘   └──────────────┘     │
+  │  ┌─┴─────────┴─┐   ┌──────────────┐      │
+  │  │ client1     │   │ client2      │      │
+  │  │ 192.168.    │   │ 192.168.     │      │
+  │  │   100.2     │   │   100.3      │      │
+  │  │ alice       │   │ bob          │      │ 
+  │  └─────────────┘   └──────────────┘      │
   └──────────────────────────────────────────┘
 ```
 
