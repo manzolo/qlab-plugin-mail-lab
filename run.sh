@@ -536,15 +536,24 @@ echo ""
 
 OVERLAY_SERVER="$LAB_DIR/${SERVER_VM}-disk.qcow2"
 if [[ -f "$OVERLAY_SERVER" ]]; then rm -f "$OVERLAY_SERVER"; fi
-create_overlay "$CLOUD_IMAGE_FILE" "$OVERLAY_SERVER" "${QLAB_DISK_SIZE:-}"
+create_overlay "$CLOUD_IMAGE_FILE" "$OVERLAY_SERVER" "${QLAB_DISK_SIZE:-}" || {
+    error "Failed to create overlay disk for server."
+    exit 1
+}
 
 OVERLAY_CLIENT1="$LAB_DIR/${CLIENT1_VM}-disk.qcow2"
 if [[ -f "$OVERLAY_CLIENT1" ]]; then rm -f "$OVERLAY_CLIENT1"; fi
-create_overlay "$CLOUD_IMAGE_FILE" "$OVERLAY_CLIENT1" "${QLAB_DISK_SIZE:-}"
+create_overlay "$CLOUD_IMAGE_FILE" "$OVERLAY_CLIENT1" "${QLAB_DISK_SIZE:-}" || {
+    error "Failed to create overlay disk for client1."
+    exit 1
+}
 
 OVERLAY_CLIENT2="$LAB_DIR/${CLIENT2_VM}-disk.qcow2"
 if [[ -f "$OVERLAY_CLIENT2" ]]; then rm -f "$OVERLAY_CLIENT2"; fi
-create_overlay "$CLOUD_IMAGE_FILE" "$OVERLAY_CLIENT2" "${QLAB_DISK_SIZE:-}"
+create_overlay "$CLOUD_IMAGE_FILE" "$OVERLAY_CLIENT2" "${QLAB_DISK_SIZE:-}" || {
+    error "Failed to create overlay disk for client2."
+    exit 1
+}
 echo ""
 
 # =============================================
