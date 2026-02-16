@@ -106,6 +106,7 @@ users:
       - "__QLAB_SSH_PUB_KEY__"
 ssh_pwauth: true
 packages:
+  - rsyslog
   - postfix
   - dovecot-imapd
   - mailutils
