@@ -105,7 +105,7 @@ qlab stop mail-lab-client2
 
 ## Exercises
 
-> **New to mail servers?** See the [Step-by-Step Guide](GUIDE.md) for complete walkthroughs including how to interact with SMTP and IMAP via telnet.
+> **New to mail servers?** See the [Step-by-Step Guide](guide.md) for complete walkthroughs including how to interact with SMTP and IMAP via telnet.
 
 | # | Exercise | What you'll do |
 |---|----------|----------------|
@@ -118,6 +118,17 @@ qlab stop mail-lab-client2
 | 7 | **Add a new user** | On server: create user `charlie`, configure mail, test sending/receiving |
 
 > **Important:** Mail commands (`mail`, `mutt`) must be run as the mail user (`alice` or `bob`), not as `labuser`. Switch user first with `sudo -u alice bash` or `sudo -u bob bash`.
+
+## Automated Tests
+
+An automated test suite validates the exercises against running VMs:
+
+```bash
+# Start the lab first
+qlab run mail-lab
+# Wait ~90s for cloud-init, then run all tests
+qlab test mail-lab
+```
 
 ## Managing VMs
 

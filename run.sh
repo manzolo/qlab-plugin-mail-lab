@@ -114,6 +114,7 @@ packages:
   - net-tools
   - iputils-ping
   - tcpdump
+  - netcat-openbsd
 write_files:
   - path: /etc/profile.d/cloud-init-status.sh
     permissions: '0755'
