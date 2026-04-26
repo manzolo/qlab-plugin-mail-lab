@@ -115,6 +115,10 @@ packages:
   - iputils-ping
   - tcpdump
   - netcat-openbsd
+  - zsh
+  - vim
+  - nano
+  - fonts-powerline
 write_files:
   - path: /etc/profile.d/cloud-init-status.sh
     permissions: '0755'
@@ -214,6 +218,13 @@ write_files:
       \033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m
 
 
+  - path: /tmp/setup-zsh.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      sed -i 's/^ZSH_THEME=.*/ZSH_THEME="agnoster"/' ~/.zshrc
+      sed -i 's/^plugins=(.*)/plugins=(git)/' ~/.zshrc
 runcmd:
   - netplan apply
   # Create mail users alice and bob
@@ -240,6 +251,8 @@ runcmd:
   - printf '%b\n' "$(cat /etc/motd.raw)" > /etc/motd
   - rm -f /etc/motd.raw
   - systemctl restart sshd
+  - sudo -Hu labuser bash /tmp/setup-zsh.sh
+  - chsh -s /usr/bin/zsh labuser
   - echo "=== mail-lab-server VM is ready! ==="
 USERDATA
 
@@ -276,6 +289,10 @@ packages:
   - net-tools
   - iputils-ping
   - curl
+  - zsh
+  - vim
+  - nano
+  - fonts-powerline
 write_files:
   - path: /etc/profile.d/cloud-init-status.sh
     permissions: '0755'
@@ -334,6 +351,13 @@ write_files:
       \033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m
 
 
+  - path: /tmp/setup-zsh.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      sed -i 's/^ZSH_THEME=.*/ZSH_THEME="agnoster"/' ~/.zshrc
+      sed -i 's/^plugins=(.*)/plugins=(git)/' ~/.zshrc
 runcmd:
   - netplan apply
   # Add mail.lab to /etc/hosts
@@ -363,6 +387,8 @@ runcmd:
   - printf '%b\n' "$(cat /etc/motd.raw)" > /etc/motd
   - rm -f /etc/motd.raw
   - systemctl restart sshd
+  - sudo -Hu labuser bash /tmp/setup-zsh.sh
+  - chsh -s /usr/bin/zsh labuser
   - echo "=== mail-lab-client1 VM is ready! ==="
 USERDATA
 
@@ -399,6 +425,10 @@ packages:
   - net-tools
   - iputils-ping
   - curl
+  - zsh
+  - vim
+  - nano
+  - fonts-powerline
 write_files:
   - path: /etc/profile.d/cloud-init-status.sh
     permissions: '0755'
@@ -457,6 +487,13 @@ write_files:
       \033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m
 
 
+  - path: /tmp/setup-zsh.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      sed -i 's/^ZSH_THEME=.*/ZSH_THEME="agnoster"/' ~/.zshrc
+      sed -i 's/^plugins=(.*)/plugins=(git)/' ~/.zshrc
 runcmd:
   - netplan apply
   # Add mail.lab to /etc/hosts
@@ -486,6 +523,8 @@ runcmd:
   - printf '%b\n' "$(cat /etc/motd.raw)" > /etc/motd
   - rm -f /etc/motd.raw
   - systemctl restart sshd
+  - sudo -Hu labuser bash /tmp/setup-zsh.sh
+  - chsh -s /usr/bin/zsh labuser
   - echo "=== mail-lab-client2 VM is ready! ==="
 USERDATA
 
