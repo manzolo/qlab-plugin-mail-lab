@@ -1,174 +1,54 @@
-# mail-lab — Mail Server Lab (Postfix + Dovecot)
+# mail-lab — Postfix & Dovecot Mail Lab
 
 [![QLab Plugin](https://img.shields.io/badge/QLab-Plugin-blue)](https://github.com/manzolo/qlab)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey)](https://github.com/manzolo/qlab)
+[![Walkthrough](https://img.shields.io/badge/walkthrough-EN%20%26%20IT-informational)](docs/walkthrough-en.pdf)
 
-A [QLab](https://github.com/manzolo/qlab) plugin that boots three virtual machines for practicing email server administration with Postfix (SMTP) and Dovecot (IMAP).
+A three-VM [QLab](https://github.com/manzolo/qlab) lab — a Postfix + Dovecot server and two
+client machines, one per user — for learning mail from the wire up: hand SMTP a message,
+pull it back over IMAP, and watch both in the server's log.
 
-## Architecture
+## Quick start
 
-```
-           Internal LAN (192.168.100.0/24)
-┌──────────────────────────────────────────────────┐
-│                                                  │
-│             ┌──────────────────┐                 │
-│             │ mail-lab-server  │                 │
-│             │ 192.168.100.1    │                 │
-│             │ Postfix + Dovecot│                 │
-│             └────────┬─────────┘                 │
-│                      │                           │
-│                ┌─────┴─────┐                     │
-│                │           │                     │
-│  ┌─────────────┴───┐  ┌────┴─────────────┐       │
-│  │ mail-lab-client1│  │ mail-lab-client2 │       │
-│  │ 192.168.100.2   │  │ 192.168.100.3    │       │
-│  │ alice (mutt)    │  │ bob (mutt)       │       │
-│  └─────────────────┘  └──────────────────┘       │
-│                                                  │
-└──────────────────────────────────────────────────┘
+```bash
+qlab install mail-lab
+qlab run mail-lab              # boots 3 VMs (~120s)
+qlab shell mail-lab-server     # Postfix (SMTP) + Dovecot (IMAP)
+qlab shell mail-lab-client1    # alice's machine
+qlab shell mail-lab-client2    # bob's machine
+qlab test mail-lab             # run the automated checks
+qlab stop mail-lab
 ```
 
-### Mail Flow
+By hand: `telnet 192.168.100.1 25` to submit, `telnet 192.168.100.1 143` to read. With a
+client: `sudo -u alice bash`, then `mutt`.
 
-```
-alice@client1 → SMTP(25) → server → Maildir → IMAP(143) → bob@client2
-bob@client2   → SMTP(25) → server → Maildir → IMAP(143) → alice@client1
-```
+## What's inside
 
-## Objectives
-
-- Configure and understand Postfix as an SMTP server
-- Configure and understand Dovecot as an IMAP server
-- Send and receive mail between two users
-- Read and interpret mail server logs
-- Use mutt as a terminal mail client
-
-## How It Works
-
-1. **Cloud image**: Downloads a minimal Ubuntu 22.04 cloud image (~250MB)
-2. **Cloud-init**: Creates `user-data` for all 3 VMs with mail packages and configs
-3. **ISO generation**: Packs cloud-init files into ISOs (cidata)
-4. **Overlay disks**: Creates COW disks for each VM (original stays untouched)
-5. **QEMU boot**: Starts all 3 VMs with SSH access and a shared internal LAN
-
-## Credentials
-
-All VMs use the same SSH credentials:
-- **Username:** `labuser`
-- **Password:** `labpass`
-
-Mail users:
-- **alice** / `labpass` (on server and client1)
-- **bob** / `labpass` (on server and client2)
+| # | Exercise | What you do |
+|---|----------|-------------|
+| 1 | Send mail | alice → bob over SMTP |
+| 2 | Read mail | bob reads and replies in mutt |
+| 3 | Read the reply | alice reads bob's reply |
+| 4 | Postfix logs | follow a message through `/var/log/mail.log` |
+| 5 | Dovecot status | `doveadm` and the Maildir |
+| 6 | SMTP/IMAP by telnet | run both protocols by hand |
+| 7 | Add a user | a new mail user is just `adduser` |
 
 ## Network
 
-| VM               | SSH (host) | Internal LAN IP  | Role          |
-|------------------|------------|------------------|---------------|
-| mail-lab-server  | dynamic    | 192.168.100.1    | Mail server   |
-| mail-lab-client1 | dynamic    | 192.168.100.2    | Alice's client|
-| mail-lab-client2 | dynamic    | 192.168.100.3    | Bob's client  |
+Private LAN `192.168.100.0/24`, isolated between the three VMs.
 
-> All host ports are dynamically allocated. Use `qlab ports` to see the actual mappings.
+| VM | Address | Role |
+|----|---------|------|
+| `mail-lab-server` | `192.168.100.1` | Postfix (SMTP) + Dovecot (IMAP) |
+| `mail-lab-client1` | `192.168.100.2` | alice (mutt) |
+| `mail-lab-client2` | `192.168.100.3` | bob (mutt) |
 
-The VMs are connected by a direct internal LAN (`192.168.100.0/24`) via QEMU socket networking. Mail traffic flows over this LAN.
+Accounts: `labuser` / `labpass` · mail users `alice`, `bob` / `labpass`. SSH forwarded — see `qlab ports`.
 
-## Walkthrough
+## Learn more
 
-`docs/` holds an illustrated account of a real run — every block of output in it
-was captured while the lab was running, not written by hand.
-
-| English | Italiano |
-|---|---|
-| [`docs/walkthrough-en.pdf`](docs/walkthrough-en.pdf) | [`docs/walkthrough-it.pdf`](docs/walkthrough-it.pdf) |
-
-```bash
-# from the qlab checkout
-python3 tools/walkthrough/build.py ../qlab-plugin-mail-lab        # English
-python3 tools/walkthrough/build.py ../qlab-plugin-mail-lab -it    # Italian
-python3 tools/walkthrough/build.py ../qlab-plugin-mail-lab --live # re-capture first
-```
-
-## Usage
-
-```bash
-# Install the plugin
-qlab install mail-lab
-
-# Run the lab (starts all 3 VMs)
-qlab run mail-lab
-
-# Wait ~90s for boot and package installation, then:
-
-# Connect to the server
-qlab shell mail-lab-server
-
-# Connect as alice
-qlab shell mail-lab-client1
-
-# Connect as bob
-qlab shell mail-lab-client2
-
-# Stop all VMs
-qlab stop mail-lab
-
-# Stop a single VM
-qlab stop mail-lab-server
-qlab stop mail-lab-client1
-qlab stop mail-lab-client2
-```
-
-## Exercises
-
-> **New to mail servers?** See the [Step-by-Step Guide](guide.md) for complete walkthroughs including how to interact with SMTP and IMAP via telnet.
-
-| # | Exercise | What you'll do |
-|---|----------|----------------|
-| 1 | **Send mail (alice → bob)** | On client1: `sudo -u alice bash`, then `echo "Hi Bob!" \| mail -s "Hello" bob@mail.lab` |
-| 2 | **Read mail (bob)** | On client2: `sudo -u bob bash`, then `mutt` — read alice's mail and reply |
-| 3 | **Read reply (alice)** | On client1: `sudo -u alice bash`, then `mutt` — read bob's reply |
-| 4 | **Check Postfix logs** | On server: `sudo tail -f /var/log/mail.log` |
-| 5 | **Check Dovecot status** | On server: `systemctl status dovecot` and `sudo doveadm mailbox list -u alice` |
-| 6 | **Test with telnet** | On client1/client2: `telnet mail.lab 25` (SMTP) or `telnet mail.lab 143` (IMAP) |
-| 7 | **Add a new user** | On server: create user `charlie`, configure mail, test sending/receiving |
-
-> **Important:** Mail commands (`mail`, `mutt`) must be run as the mail user (`alice` or `bob`), not as `labuser`. Switch user first with `sudo -u alice bash` or `sudo -u bob bash`.
-
-## Automated Tests
-
-An automated test suite validates the exercises against running VMs:
-
-```bash
-# Start the lab first
-qlab run mail-lab
-# Wait ~90s for cloud-init, then run all tests
-qlab test mail-lab
-```
-
-## Managing VMs
-
-```bash
-# View boot logs
-qlab log mail-lab-server
-qlab log mail-lab-client1
-qlab log mail-lab-client2
-
-# Check running VMs
-qlab status
-```
-
-## Resetting
-
-To start fresh, stop and re-run:
-
-```bash
-qlab stop mail-lab
-qlab run mail-lab
-```
-
-Or reset the entire workspace:
-
-```bash
-qlab reset
-```
+- 📖 **[Step-by-step guide](guide.md)** — every exercise with full commands, including SMTP/IMAP over telnet
+- 📄 **Illustrated walkthrough** — a real run, captured live: **[English](docs/walkthrough-en.pdf)** · **[Italiano](docs/walkthrough-it.pdf)**
+- 🧩 **[QLab](https://github.com/manzolo/qlab)** — the plugin runner: how install, overlays and cloud-init work
