@@ -1,0 +1,21 @@
+$ telnet 192.168.100.1 25      — the whole submission, typed by hand
+Trying 192.168.100.1...
+Connected to 192.168.100.1.
+Escape character is '^]'.
+220 mail.lab ESMTP mail.lab
+250-mail.lab
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250-DSN
+250-SMTPUTF8
+250 CHUNKING
+250 2.1.0 Ok
+250 2.1.5 Ok
+354 End data with <CR><LF>.<CR><LF>
+250 2.0.0 Ok: queued as E517414B0
+221 2.0.0 Bye
+Connection closed by foreign host.

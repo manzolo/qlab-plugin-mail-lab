@@ -1,0 +1,17 @@
+The human client does exactly the two things done by hand above:
+
+--- alice (client1) ~/.muttrc ---
+set from = "alice@mail.lab"
+set folder = "imap://alice:labpass@mail.lab:143/"
+set spoolfile = "imap://alice:labpass@mail.lab:143/INBOX"
+set smtp_url = "smtp://alice@mail.lab:25/"
+--- bob   (client2) ~/.muttrc ---
+set from = "bob@mail.lab"
+set folder = "imap://bob:labpass@mail.lab:143/"
+set spoolfile = "imap://bob:labpass@mail.lab:143/INBOX"
+set smtp_url = "smtp://bob@mail.lab:25/"
+
+$ and the same mailbox, asked of Dovecot from the server side
+INBOX
+
+messages in bob INBOX: 3

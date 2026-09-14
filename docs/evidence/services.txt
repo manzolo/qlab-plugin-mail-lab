@@ -1,0 +1,25 @@
+$ the two daemons, and the ports they hold
+active active
+0.0.0.0:993 "dovecot",pid=6303,fd=34
+0.0.0.0:25 "master",pid=6200,fd=13
+0.0.0.0:143 "dovecot",pid=6303,fd=33
+[::]:993 "dovecot",pid=6303,fd=35
+
+$ postconf -n     (only what differs from the defaults)
+home_mailbox = Maildir/
+inet_interfaces = all
+inet_protocols = ipv4
+mailbox_size_limit = 0
+mydestination = $myhostname, mail.lab, localhost.localdomain, localhost
+mydomain = mail.lab
+myhostname = mail.lab
+mynetworks = 127.0.0.0/8, 192.168.100.0/24
+myorigin = $mydomain
+smtpd_banner = $myhostname ESMTP mail.lab
+smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
+
+$ where Dovecot expects to find the mail
+mail_location = maildir:~/Maildir
+protocols =  imap
+auth_mechanisms = plain login
+disable_plaintext_auth = no

@@ -1,0 +1,36 @@
+$ telnet 192.168.100.1 143     — bob reads it, also by hand
+Trying 192.168.100.1...
+Connected to 192.168.100.1.
+Escape character is '^]'.
+* OK Waiting for authentication process to respond..
+* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ STARTTLS AUTH=PLAIN AUTH=LOGIN] Dovecot (Ubuntu) ready.
+a OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE SORT SORT=DISPLAY THREAD=REFERENCES THREAD=REFS THREAD=ORDEREDSUBJECT MULTIAPPEND URL-PARTIAL CATENATE UNSELECT CHILDREN NAMESPACE UIDPLUS LIST-EXTENDED I18NLEVEL=1 CONDSTORE QRESYNC ESEARCH ESORT SEARCHRES WITHIN CONTEXT=SEARCH LIST-STATUS BINARY MOVE SNIPPET=FUZZY PREVIEW=FUZZY PREVIEW STATUS=SIZE SAVEDATE LITERAL+ NOTIFY SPECIAL-USE] Logged in
+* LIST (\HasNoChildren) "." INBOX
+b OK List completed (0.002 + 0.000 + 0.001 secs).
+* FLAGS (\Answered \Flagged \Deleted \Seen \Draft)
+* OK [PERMANENTFLAGS (\Answered \Flagged \Deleted \Seen \Draft \*)] Flags permitted.
+* 3 EXISTS
+* 1 RECENT
+* OK [UNSEEN 1] First unseen.
+* OK [UIDVALIDITY 1789394123] UIDs valid
+* OK [UIDNEXT 5] Predicted next UID
+c OK [READ-WRITE] Select completed (0.016 + 0.000 + 0.015 secs).
+* 1 FETCH (FLAGS () BODY[HEADER.FIELDS (FROM SUBJECT)] {47}
+Subject: sent by hand
+From: alice@mail.lab
+
+)
+* 2 FETCH (FLAGS () BODY[HEADER.FIELDS (FROM SUBJECT)] {47}
+Subject: sent by hand
+From: alice@mail.lab
+
+)
+* 3 FETCH (FLAGS (\Recent) BODY[HEADER.FIELDS (FROM SUBJECT)] {47}
+Subject: sent by hand
+From: alice@mail.lab
+
+)
+d OK Fetch completed (0.004 + 0.000 + 0.003 secs).
+* BYE Logging out
+e OK Logout completed (0.001 + 0.000 secs).
+Connection closed by foreign host.

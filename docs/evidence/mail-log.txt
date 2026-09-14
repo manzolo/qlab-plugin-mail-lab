@@ -1,0 +1,8 @@
+$ the life of that one message, on the server
+queue id: E517414B0
+
+Sep 14 14:02:54 postfix/smtpd[6927]: E517414B0: client=unknown[192.168.100.2]
+Sep 14 14:02:56 postfix/cleanup[6930]: E517414B0: message-id=<>
+Sep 14 14:02:56 postfix/qmgr[6203]: E517414B0: from=<alice@mail.lab>, size=260, nrcpt=1 (queue active)
+Sep 14 14:02:56 postfix/local[6931]: E517414B0: to=<bob@mail.lab>, relay=local, delay=3, delays=3/0/0/0, dsn=2.0.0, status=sent (delivered to maildir)
+Sep 14 14:02:56 postfix/qmgr[6203]: E517414B0: removed

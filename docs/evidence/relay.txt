@@ -1,0 +1,26 @@
+$ who is allowed to post through this server
+mynetworks = 127.0.0.0/8, 192.168.100.0/24
+smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
+smtpd_recipient_restrictions =
+
+$ two recipients offered from a LAN client, one local and one not
+220 mail.lab ESMTP mail.lab
+250 CHUNKING
+250 2.1.0 Ok
+550 5.1.1 <ghost@mail.lab>: Recipient address rejected: User unknown in local recipient table
+250 2.1.5 Ok
+354 End data with <CR><LF>.<CR><LF>
+250 2.0.0 Ok: queued as 91DF1AF2A
+221 2.0.0 Bye
+
+$ and what became of the one that was accepted for off-site delivery
+Sep 14 14:05:03 postfix/smtpd[6927]: 91DF1AF2A: client=unknown[192.168.100.2]
+Sep 14 14:05:05 postfix/cleanup[6930]: 91DF1AF2A: message-id=<>
+Sep 14 14:05:05 postfix/qmgr[6203]: 91DF1AF2A: from=<alice@mail.lab>, size=213, nrcpt=1 (queue active)
+Sep 14 14:05:05 postfix/smtp[7028]: 91DF1AF2A: to=<nobody@example.org>, relay=none, delay=4.1, delays=4.1/0/0/0, dsn=5.1.0, status=bounced (Domain example.org does not accept mail (nullMX))
+Sep 14 14:05:05 postfix/bounce[7029]: 91DF1AF2A: sender non-delivery notification: 9E2EAAFEE
+Sep 14 14:05:05 postfix/qmgr[6203]: 91DF1AF2A: removed
+
+messages in alice INBOX now: 1
+hdr.from: MAILER-DAEMON@mail.lab (Mail Delivery System)
+hdr.subject: Undelivered Mail Returned to Sender

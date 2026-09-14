@@ -1,0 +1,80 @@
+# mail-lab — what the walkthrough builder captures from a running lab.
+# One server (Postfix + Dovecot) and two client machines, one per user.
+# Everything is done by hand on the wire first, then shown from the server side.
+
+evidence:
+  - id: qlab-test
+    cmd: qlab test mail-lab 2>&1 || true
+  - id: topology
+    cmd: |
+      for v in server client1 client2; do
+        printf '%-20s ' "mail-lab-$v"
+        qlab shell mail-lab-$v --no-wait -c 'ip -br addr | grep ens4 | awk "{print \$3}"' 2>/dev/null | tail -1
+      done
+      echo
+      qlab shell mail-lab-server --no-wait -c 'hostname -f; getent passwd alice bob | cut -d: -f1,3,6'
+  - id: services
+    cmd: |
+      echo '$ the two daemons, and the ports they hold'
+      qlab shell mail-lab-server --no-wait -c 'systemctl is-active postfix dovecot | paste -sd" " -; sudo ss -tlnp | grep -E "master|dovecot" | awk "{print \$4, \$6}" | sed "s/users:((//;s/))//"'
+      echo
+      echo '$ postconf -n     (only what differs from the defaults)'
+      qlab shell mail-lab-server --no-wait -c 'postconf -n | grep -vE "^(compat|append_dot|biff|readme|html|manpage|sample|meta_directory|shlib|daemon_directory|data_directory|queue_directory|command_directory|mail_owner|setgid|newaliases|mailq|sendmail|debugger|recipient_delimiter|smtpd_tls|smtp_tls|alias_)"'
+      echo
+      echo '$ where Dovecot expects to find the mail'
+      qlab shell mail-lab-server --no-wait -c 'sudo doveconf -n mail_location protocols auth_mechanisms disable_plaintext_auth'
+  - id: smtp-hand
+    vm: mail-lab-client1
+    cmd: |
+      echo '$ telnet 192.168.100.1 25      — the whole submission, typed by hand'
+      { printf "EHLO client1.lab\n"; sleep 2
+        printf "MAIL FROM:<alice@mail.lab>\n"; sleep 1
+        printf "RCPT TO:<bob@mail.lab>\n"; sleep 1
+        printf "DATA\n"; sleep 1
+        printf "Subject: sent by hand\nFrom: alice@mail.lab\nTo: bob@mail.lab\n\nTyped straight into the socket.\n.\n"; sleep 3
+        printf "QUIT\n"; sleep 2; } | timeout 40 telnet 192.168.100.1 25
+  - id: mail-log
+    cmd: |
+      echo '$ the life of that one message, on the server'
+      qlab shell mail-lab-server --no-wait -c 'qid=$(sudo grep -oE "^.*postfix/qmgr\[[0-9]+\]: [0-9A-F]+: from=" /var/log/mail.log | tail -1 | grep -oE "[0-9A-F]+: from=" | cut -d: -f1); echo "queue id: $qid"; echo; sudo grep "$qid" /var/log/mail.log | sed "s/ mail-lab-server / /"'
+  - id: maildir
+    cmd: |
+      echo '$ where it actually landed'
+      qlab shell mail-lab-server --no-wait -c 'sudo find /home/bob/Maildir -maxdepth 1 -type d | sort; echo; for d in new cur; do printf "%-4s %s file(s)\n" "$d" "$(sudo find /home/bob/Maildir/$d -type f | wc -l)"; done; echo; sudo find /home/bob/Maildir/new -type f -printf "%TT  %s  %f\n" | sort | tail -2'
+      echo
+      echo '$ the message as stored — the headers Postfix added are at the top'
+      qlab shell mail-lab-server --no-wait -c 'f=$(sudo find /home/bob/Maildir/new -type f -printf "%T@ %p\n" | sort -n | tail -1 | cut -d" " -f2); sudo sed -n "1,22p" "$f"'
+  - id: imap-hand
+    vm: mail-lab-client2
+    cmd: |
+      echo '$ telnet 192.168.100.1 143     — bob reads it, also by hand'
+      { printf "a LOGIN bob labpass\n"; sleep 2
+        printf "b LIST \"\" \"*\"\n"; sleep 1
+        printf "c SELECT INBOX\n"; sleep 1
+        printf "d FETCH 1:* (FLAGS BODY.PEEK[HEADER.FIELDS (FROM SUBJECT)])\n"; sleep 2
+        printf "e LOGOUT\n"; sleep 1; } | timeout 40 telnet 192.168.100.1 143
+  - id: clients
+    cmd: |
+      echo 'The human client does exactly the two things done by hand above:'
+      echo
+      echo '--- alice (client1) ~/.muttrc ---'
+      qlab shell mail-lab-client1 --no-wait -c 'sudo grep -E "folder|spoolfile|smtp_url|from " /home/alice/.muttrc'
+      echo '--- bob   (client2) ~/.muttrc ---'
+      qlab shell mail-lab-client2 --no-wait -c 'sudo grep -E "folder|spoolfile|smtp_url|from " /home/bob/.muttrc'
+      echo
+      echo '$ and the same mailbox, asked of Dovecot from the server side'
+      qlab shell mail-lab-server --no-wait -c 'sudo doveadm mailbox list -u bob; echo; sudo doveadm search -u bob mailbox INBOX all | wc -l | xargs echo "messages in bob INBOX:"'
+  - id: relay
+    cmd: |
+      qlab shell mail-lab-server --no-wait -c 'sudo doveadm expunge -u alice mailbox INBOX all 2>/dev/null; true' >/dev/null
+      echo '$ who is allowed to post through this server'
+      qlab shell mail-lab-server --no-wait -c 'postconf mynetworks smtpd_relay_restrictions smtpd_recipient_restrictions 2>/dev/null'
+      echo
+      echo '$ two recipients offered from a LAN client, one local and one not'
+      qlab shell mail-lab-client1 --no-wait -c '{ printf "EHLO client1.lab\n"; sleep 2; printf "MAIL FROM:<alice@mail.lab>\n"; sleep 1; printf "RCPT TO:<ghost@mail.lab>\n"; sleep 1; printf "RCPT TO:<nobody@example.org>\n"; sleep 1; printf "DATA\n"; sleep 1; printf "Subject: off-site\n\nheaded out of the lab.\n.\n"; sleep 3; printf "QUIT\n"; sleep 2; } | timeout 40 telnet 192.168.100.1 25 2>/dev/null | grep -aE "^(220|250 |354|4[0-9][0-9]|5[0-9][0-9]|221)"'
+      echo
+      echo '$ and what became of the one that was accepted for off-site delivery'
+      qlab shell mail-lab-server --no-wait -c 'sleep 5; qid=$(sudo grep -oE "[0-9A-F]+: to=<nobody@example.org>" /var/log/mail.log | tail -1 | cut -d: -f1); sudo grep -E "$qid" /var/log/mail.log | sed "s/ mail-lab-server / /"; echo; sudo doveadm search -u alice mailbox INBOX all | wc -l | xargs echo "messages in alice INBOX now:"; sudo doveadm fetch -u alice "hdr.from hdr.subject" mailbox INBOX | grep -iE "^hdr\." | tail -4'
+  - id: teardown
+    cmd: |
+      qlab shell mail-lab-server --no-wait -c 'sudo postsuper -d ALL 2>&1 | tail -1; echo "queue cleared"'

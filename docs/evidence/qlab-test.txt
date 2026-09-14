@@ -1,0 +1,79 @@
+[INFO] Running tests for plugin 'mail-lab'...
+
+
+══════════════════════════════════════════
+  mail-lab — Automated Test Suite
+══════════════════════════════════════════
+
+Exercise 1 — Mail Server Anatomy
+
+  [PASS] Postfix is active
+  [PASS] Dovecot is active
+  [PASS] Port 25 (SMTP) listening
+  [PASS] Port 143 (IMAP) listening
+  [PASS] User alice exists
+  [PASS] User bob exists
+  [PASS] Alice Maildir exists
+  [PASS] Bob Maildir exists
+  [PASS] Client1 can reach server
+  [PASS] Client2 can reach server
+  [PASS] Client1 has mail.lab in hosts
+  [PASS] Client2 has mail.lab in hosts
+
+  Exercise 1: All 12 checks passed
+
+Exercise 2 — Send and Receive Mail
+
+  [PASS] Bob received mail in Maildir
+  [PASS] Message contains subject
+  [PASS] Alice received mail in Maildir
+  [PASS] Alice's message from bob
+
+  Exercise 2: All 4 checks passed
+
+Exercise 3 — SMTP Protocol
+
+  [PASS] SMTP banner received
+  [PASS] EHLO response received
+  [PASS] MAIL FROM accepted
+  [PASS] Message queued
+  [PASS] SMTP test message delivered
+
+  Exercise 3: All 5 checks passed
+
+Exercise 4 — IMAP Protocol
+
+  [PASS] IMAP banner received
+  [PASS] IMAP LOGIN successful
+  [PASS] INBOX selected
+  [PASS] SEARCH ALL returns results
+  [PASS] Doveadm lists bob's mailboxes
+
+  Exercise 4: All 5 checks passed
+
+Exercise 5 — Postfix Configuration
+
+  [PASS] postconf -n works
+  [PASS] myhostname = mail.lab
+  [PASS] mydomain = mail.lab
+  [PASS] home_mailbox = Maildir/
+  [PASS] mynetworks includes 192.168.100.0/24
+  [PASS] inet_interfaces = all
+  [PASS] Maildir has new/
+  [PASS] Maildir has cur/
+  [PASS] Maildir has tmp/
+
+  Exercise 5: All 9 checks passed
+
+Exercise 6 — Add a New User
+
+  [PASS] User charlie created
+  [PASS] Charlie received mail
+  [PASS] Message content correct
+  [PASS] Charlie can login via IMAP
+
+  Exercise 6: All 4 checks passed
+
+==========================================
+  All 6 exercise(s) passed!
+==========================================

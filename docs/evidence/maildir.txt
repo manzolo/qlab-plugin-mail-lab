@@ -1,0 +1,23 @@
+$ where it actually landed
+/home/bob/Maildir
+/home/bob/Maildir/cur
+/home/bob/Maildir/new
+/home/bob/Maildir/tmp
+
+new  1 file(s)
+cur  2 file(s)
+
+14:02:56.9645628880  337  1789394576.Vfe01I14b7M967374.mail-lab-server
+
+$ the message as stored — the headers Postfix added are at the top
+Return-Path: <alice@mail.lab>
+X-Original-To: bob@mail.lab
+Delivered-To: bob@mail.lab
+Received: from client1.lab (unknown [192.168.100.2])
+	by mail.lab (Postfix) with ESMTP id E517414B0
+	for <bob@mail.lab>; Mon, 14 Sep 2026 14:02:53 +0000 (UTC)
+Subject: sent by hand
+From: alice@mail.lab
+To: bob@mail.lab
+
+Typed straight into the socket.

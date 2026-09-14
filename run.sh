@@ -233,9 +233,11 @@ runcmd:
   - useradd -m -s /bin/bash bob
   - echo "bob:labpass" | chpasswd
   # Create Maildir for both users
-  - mkdir -p /home/alice/Maildir/{new,cur,tmp}
+  # runcmd strings run under sh, which has no brace expansion: list the dirs
+  - mkdir -p /home/alice/Maildir/new /home/alice/Maildir/cur /home/alice/Maildir/tmp
   - chown -R alice:alice /home/alice/Maildir
-  - mkdir -p /home/bob/Maildir/{new,cur,tmp}
+  # runcmd strings run under sh, which has no brace expansion: list the dirs
+  - mkdir -p /home/bob/Maildir/new /home/bob/Maildir/cur /home/bob/Maildir/tmp
   - chown -R bob:bob /home/bob/Maildir
   # Configure Postfix
   - cp /etc/postfix/main.cf.lab /etc/postfix/main.cf

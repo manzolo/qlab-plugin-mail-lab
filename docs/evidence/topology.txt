@@ -1,0 +1,7 @@
+mail-lab-server      192.168.100.1/24
+mail-lab-client1     192.168.100.2/24
+mail-lab-client2     192.168.100.3/24
+
+mail-lab-server
+alice:1001:/home/alice
+bob:1002:/home/bob
